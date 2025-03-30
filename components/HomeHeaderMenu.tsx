@@ -19,7 +19,8 @@ function HomeHeaderMenu(userInfo: any) {
       }>
       <Menu.Item title='Perfil'></Menu.Item>
       <Menu.Item title='Configurações'></Menu.Item>
-      <Menu.Item title='Conversar com a IA'></Menu.Item>
+      <Menu.Item onPress={() => router.replace("/chat")} title='Conversar com a IA'></Menu.Item>
+
       <Divider />
       <Menu.Item title='Sair' onPress={() => { router.replace("/login") }}></Menu.Item>
     </Menu >

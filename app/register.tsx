@@ -17,14 +17,13 @@ function Register() {
   const router = useRouter();
 
   
-  const SERVER_URL = '127.0.0.1:3000'; 
+  const SERVER_URL = 'http://10.0.0.25:3000'; 
   //Meu IPV4 (tem que mudar para)
 
   const handleRegister = async () => {
     setFormSubmitted(true);
     let hasError = false;
 
-    
     if (!nome || nome.trim().length < 2) {
       hasError = true;
     }
@@ -52,22 +51,22 @@ function Register() {
 
     try {
       const json = { 
-        nome: nome,
+        name: nome,  
         email: email.value,
         telefone: telefone,
-        senha: senha.value,
+        password: senha.value,  
         tipo: checked
       };
 
-      const response = await httpService.post(`${SERVER_URL}/api/user`, json);
+      const result = await httpService.post(`${SERVER_URL}/api/user`, json);
       
-      console.log("Resposta do servidor:", response);
+      console.log("Resposta do servidor:", result);
       
-      if (response.success) {
+      if (result.message === "User created successfully") {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-        router.replace('/(tabs)/home');
+        router.replace('/home');
       } else {
-        Alert.alert('Erro', response.message || "Ocorreu um erro durante o registro");
+        Alert.alert('Erro', result.message || "Ocorreu um erro durante o registro");
       }
     } catch (error) {
       console.error("Erro ao registrar:", error);
