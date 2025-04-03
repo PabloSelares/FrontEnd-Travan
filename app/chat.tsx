@@ -1,18 +1,24 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { FlatList, SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 
-type Message = {
+class Message {
   text: string;
   sentBy: string;
-  timestamp?: Date;
-};
+  timestamp: Date;
 
-type BalloonProps = {
+  constructor(text: string, sentBy: string) {
+    this.text = text;
+    this.sentBy = sentBy;
+    this.timestamp = new Date();
+  }
+}
+
+interface BalloonProps {
   message: Message;
   userLogged: string;
-};
+}
 
 const Colors = {
   primary: '#3a0ca3',
@@ -22,63 +28,60 @@ const Colors = {
   light: '#e0e0e0',
 };
 
-const Chat = () => {  
+const Chat = () => {
   const scrollRef = useRef<FlatList<Message>>(null);
   const router = useLocalSearchParams();
-  const [userLogged] = useState("User"); 
+  const [userLogged] = useState("User");
   const [chat, setChat] = useState<{ messages: Message[] }>({ messages: [] });
   const [message, setMessage] = useState("");
+  const wsRef = useRef<WebSocket | null>(null);
 
-  let ws = new WebSocket('ws://10.5.3.222:3000');// IPV4
-  
   useEffect(() => {
+    const ws = new WebSocket('ws://10.5.1.155:3000');
+    //Meu IPV4 do dia
+    wsRef.current = ws;
+
     ws.onopen = () => {
       console.log("WebSocket conectado com sucesso.");
     };
-    
-    ws.onmessage = ({ data }) => {
-      try {
-        const json = JSON.parse(data);
-        console.log("DATA", json);
-        setChat(prev => ({ messages: [...prev.messages, json] }));
-        
-        if (scrollRef.current) {
-          scrollRef.current.scrollToEnd({ animated: true });
+    ws.onmessage = async (event) => {
+      console.log("Dados brutos recebidos no WebSocket:", event.data); 
+        try {
+          const msg = JSON.parse(event.data);
+          setChat(prev => ({
+            messages: [...prev.messages, msg]
+          }));
+        } catch (error) {
+          console.error("Erro ao converter JSON:", error, "Dados recebidos:", event.data);
         }
-        
-        if (json.sentBy === userLogged) {
-          setMessage('');
-        }        
-      } catch (error) {
-        console.log("Mensagem chegou com sucesso!");
-      }
+      
+    };
+
+    return () => {
+      ws.close();
     };
   }, []);
 
   const sendMessage = () => {
-    if (!message.trim()) return;
-    
-    const newMessage: Message = {
-      text: message,
-      sentBy: userLogged,
-      timestamp: new Date()
-    };
-    
-    setChat(prev => ({ messages: [...prev.messages, newMessage] }));
-    setMessage("");
+    if (message.trim() && wsRef.current) {
+      const newMessage = new Message(message, userLogged);
+      wsRef.current.send(JSON.stringify(newMessage));
+      setMessage("");
+    }
   };
 
   return (
     <Fragment>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {chat.messages.length > 0 ? (
-          chat.messages.map((m: Message, index: number) => (
-            <Balloon key={index} message={m} userLogged={userLogged} />
-          ))
-        ) : (
-          <Text style={styles.emptyMessage}>Sem mensagens no momento</Text>
+      <FlatList
+        ref={scrollRef}
+        data={chat.messages}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({ item }) => <Balloon message={item} userLogged={userLogged} />}
+        ListEmptyComponent={() => (
+          <Text style={{ alignSelf: 'center', color: '#848484' }}>Sem mensagens no momento</Text>
         )}
-      </ScrollView>
+      />
+
       <SafeAreaView>
         <View style={styles.messageTextInputContainer}>
           <TextInput
@@ -94,10 +97,10 @@ const Chat = () => {
             disabled={!message.trim()}
             onPress={sendMessage}
           >
-            <Ionicons 
-              name="send" 
-              color={message.trim() === "" ? Colors.light : Colors.primary} 
-              size={24} 
+            <Ionicons
+              name="send"
+              color={message.trim() === "" ? Colors.light : Colors.primary}
+              size={24}
             />
           </TouchableOpacity>
         </View>
@@ -107,24 +110,27 @@ const Chat = () => {
 };
 
 const Balloon = ({ message, userLogged }: BalloonProps) => {
-  const isSent = message.sentBy === userLogged;
+  const isSent = userLogged === message.sentBy;
 
   return (
     <View style={[styles.bubbleWrapper, isSent ? styles.bubbleWrapperSent : styles.bubbleWrapperReceived]}>
-      <View style={[styles.balloon, isSent ? styles.balloonSent : styles.balloonReceived]}>
-        {!isSent && <Text style={styles.senderName}>{message.sentBy}</Text>}
-        <Text style={isSent ? styles.balloonTextSent : styles.balloonTextReceived}>{message.text}</Text>
-        <Text style={styles.timestamp}>
-          {message.timestamp?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </Text>
-      </View>
+    <View style={[styles.balloon, isSent ? styles.balloonSent : styles.balloonReceived]}>
+      {!isSent && <Text style={styles.senderName}>{message.sentBy}</Text>}
+      <Text style={isSent ? styles.balloonTextSent : styles.balloonTextReceived}>{message.text}</Text>
+      <Text style={styles.timestamp}>
+        {message.timestamp
+          ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : "Hora indisponível"}
+      </Text>
+    </View>
+ 
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   emptyMessage: {
-    alignSelf: "center", 
+    alignSelf: "center",
     color: "#848484",
     marginTop: 20
   },
@@ -192,10 +198,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.light,
     borderWidth: 1,
     fontSize: 16,
-  },
-  scrollViewContainer: {
-    padding: 12,
-    paddingBottom: 0,
   },
   sendButton: {
     flexDirection: "row",

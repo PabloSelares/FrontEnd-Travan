@@ -1,17 +1,19 @@
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router"; 
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { TouchableOpacity, Text } from "react-native";
 import "react-native-reanimated";
 
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"), 
   });
+
+  const router = useRouter(); 
 
   useEffect(() => {
     if (loaded) {
@@ -30,7 +32,21 @@ export default function RootLayout() {
       <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="register" options={{ headerShown: false }} />
-      <Stack.Screen name="chat" />
+      <Stack.Screen
+        name="chat"
+        options={{
+          headerTitleAlign: "center",
+          title: 'AI ecommerce Mobile',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.replace("/(tabs)/home")}
+              style={{ padding: 10, marginLeft: 15 }}
+            >
+              <Text style={{ fontSize: 16 }}>← Voltar</Text>
+            </TouchableOpacity>
+          ),
+        }}
+      />
       <Stack.Screen name="changeName" options={{ headerShown: false }} />
       <Stack.Screen name="carrinho" options={{ headerShown: false }} />
     </Stack>
