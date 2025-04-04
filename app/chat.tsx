@@ -37,8 +37,9 @@ const Chat = () => {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://10.5.1.155:3000');
-    //Meu IPV4 do dia
+    // const ws = new WebSocket('ws://10.5.1.155:3000');
+    const ws = new WebSocket('ws://192.168.15.105'); //ipv4 leal dia 04/04
+
     wsRef.current = ws;
 
     ws.onopen = () => {

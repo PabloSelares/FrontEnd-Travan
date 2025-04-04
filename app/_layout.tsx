@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router"; 
 import * as SplashScreen from "expo-splash-screen";
@@ -42,7 +43,7 @@ export default function RootLayout() {
               onPress={() => router.replace("/(tabs)/home")}
               style={{ padding: 10, marginLeft: 15 }}
             >
-              <Text style={{ fontSize: 16 }}>← Voltar</Text>
+              <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
           ),
         }}
