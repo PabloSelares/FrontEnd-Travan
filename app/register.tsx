@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
-import { TextInput, RadioButton } from 'react-native-paper';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+  TextInput,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import httpService from '../app/services/httpService';
 
@@ -15,11 +21,7 @@ function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const router = useRouter();
-
-  
   const SERVER_URL = 'http://10.0.0.25:3000';
-  //ipv4 leal dia 04/04
-  //Meu IPV4 (tem que mudar para)
 
   const handleRegister = async () => {
     setFormSubmitted(true);
@@ -51,27 +53,24 @@ function Register() {
     setIsLoading(true);
 
     try {
-      const json = { 
-        name: nome,  
+      const json = {
+        name: nome,
         email: email.value,
         telefone: telefone,
-        password: senha.value,  
-        tipo: checked
+        password: senha.value,
+        tipo: checked,
       };
 
       const result = await httpService.post(`${SERVER_URL}/api/user`, json);
-      
-      console.log("Resposta do servidor:", result);
-      
-      if (result.message === "User created successfully") {
+
+      if (result.message === 'User created successfully') {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
         router.replace('/home');
       } else {
-        Alert.alert('Erro', result.message || "Ocorreu um erro durante o registro");
+        Alert.alert('Erro', result.message || 'Erro ao registrar');
       }
     } catch (error) {
-      console.error("Erro ao registrar:", error);
-      Alert.alert('Erro', "Não foi possível conectar ao servidor. Tente novamente mais tarde.");
+      Alert.alert('Erro', 'Erro ao conectar ao servidor');
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +108,7 @@ function Register() {
 
   return (
     <LinearGradient
-      colors={["#1a002a", "#3a0ca3"]}
+      colors={['#1a002a', '#3a0ca3']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.container}
@@ -138,37 +137,27 @@ function Register() {
         {handleErrorEmail()}
 
         <View style={styles.radioContainer}>
-          <TouchableOpacity
-            style={[styles.radioOption, checked === 'motorista' && styles.radioSelected]}
-            onPress={() => setChecked('motorista')}
-          >
-            <RadioButton
-              value="motorista"
-              status={checked === 'motorista' ? 'checked' : 'unchecked'}
-              onPress={() => setChecked('motorista')}
-              color="black"
-            />
-            <Text style={styles.radioLabel}>Motorista</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.radioOption, checked === 'passageiro' && styles.radioSelected]}
-            onPress={() => setChecked('passageiro')}
-          >
-            <RadioButton
-              value="passageiro"
-              status={checked === 'passageiro' ? 'checked' : 'unchecked'}
-              onPress={() => setChecked('passageiro')}
-              color="black"
-            />
-            <Text style={styles.radioLabel}>Passageiro</Text>
-          </TouchableOpacity>
+          {['motorista', 'passageiro'].map((tipo) => (
+            <TouchableOpacity
+              key={tipo}
+              style={[
+                styles.radioOption,
+                checked === tipo && styles.radioSelected,
+              ]}
+              onPress={() => setChecked(tipo)}
+            >
+              <View style={styles.radioCircle}>
+                {checked === tipo && <View style={styles.radioDot} />}
+              </View>
+              <Text style={styles.radioLabel}>{tipo.charAt(0).toUpperCase() + tipo.slice(1)}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         <TextInput
           placeholder="Telefone (com DDD)"
           value={telefone}
-          keyboardType='phone-pad'
+          keyboardType="phone-pad"
           onChangeText={setTelefone}
           style={styles.input}
           placeholderTextColor="black"
@@ -185,8 +174,8 @@ function Register() {
         />
         {handleErrorPassword()}
 
-        <TouchableOpacity 
-          style={[styles.registerButton, isLoading && styles.disabledButton]} 
+        <TouchableOpacity
+          style={[styles.registerButton, isLoading && styles.disabledButton]}
           onPress={handleRegister}
           disabled={isLoading}
         >
@@ -194,10 +183,10 @@ function Register() {
             {isLoading ? 'Processando...' : 'Registrar'}
           </Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.voltarButton} 
-          onPress={() => router.replace("/")}
+
+        <TouchableOpacity
+          style={styles.voltarButton}
+          onPress={() => router.replace('/')}
           disabled={isLoading}
         >
           <Text>Voltar</Text>
@@ -215,17 +204,26 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     borderRadius: 15,
-    width: '80%',
+    width: '88%',
     alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 3,
   },
   input: {
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     borderRadius: 5,
     marginTop: 20,
     width: '80%',
     height: 50,
     fontSize: 14,
     paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
   radioContainer: {
     flexDirection: 'row',
@@ -238,25 +236,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 5,
-    width: '45%',
+    width: '48%',
     justifyContent: 'center',
     padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
   radioSelected: {
-    borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#3a0ca3',
+    backgroundColor: 'rgb(245, 245, 245)',
   },
   radioLabel: {
     color: 'black',
     marginLeft: 5,
+    textTransform: 'capitalize',
+  },
+  radioCircle: {
+    height: 18,
+    width: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: '#3a0ca3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioDot: {
+    height: 7,
+    width: 7,
+    borderRadius: 5,
+    backgroundColor: '#3a0ca3',
   },
   registerButton: {
-    backgroundColor: '#1BD7BF',
+    backgroundColor: '#3a0ca3',
     padding: 15,
     borderRadius: 5,
     marginTop: 20,
     width: '80%',
     alignItems: 'center',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   disabledButton: {
     backgroundColor: '#cccccc',
@@ -266,17 +286,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 20,
+    color: '#3a0ca3',
   },
   error: {
     color: 'red',
     fontSize: 12,
     alignSelf: 'flex-start',
     marginLeft: '10%',
-    marginTop: 5,
+    marginTop: 3,
   },
   voltarButton: {
     backgroundColor: '#FFF',
@@ -285,7 +304,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '80%',
     alignItems: 'center',
-  }
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  voltarButtonText: {
+    color: '#64748B',
+  },
 });
 
 export default Register;

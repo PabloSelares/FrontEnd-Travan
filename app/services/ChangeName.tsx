@@ -8,7 +8,7 @@ const ChangeName = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Digite seu nome de Usuario:</Text>
+      <Text style={styles.title}>Digite seu nome de usuário:</Text>
       <TextInput
         onChangeText={(text) => setUsername(text)}
         placeholderTextColor="gray"
@@ -20,7 +20,7 @@ const ChangeName = () => {
         style={[styles.button, username === '' && styles.buttonDisabled]}
         onPress={() => router.replace({ pathname: '/chat', params: { username } })}
       >
-        <Text style={styles.buttonText}>Salvar</Text>
+        <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -37,26 +37,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 30,
-  },
-  textInput: {
-    width: '100%',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: '#000',
     marginBottom: 20,
   },
+  textInput: {
+    marginBottom: 20,
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    width: '80%',
+    height: 50,
+    fontSize: 14,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
   button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 10,
+    backgroundColor: '#3a0ca3',
+    padding: 15,
+    borderRadius: 5,
+    width: '80%',
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   buttonDisabled: {
     backgroundColor: '#A0A0A0',

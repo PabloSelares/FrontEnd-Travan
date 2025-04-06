@@ -55,15 +55,17 @@ const Login = () => {
     >
       <View style={styles.formContainer}>
         <View style={styles.titleContainer}>
-          <MaterialCommunityIcons name="account-circle" size={100} style={{ color: "#FFF" }} />
+          <MaterialCommunityIcons name="account-circle" size={100} style={{ color: "#3a0ca3" }} />
           <Text style={styles.title}>TraVan</Text>
         </View>
-        
+
         <TextInput 
           onChangeText={(text) => setEmail({ value: text, dirty: true })}
           placeholder="E-mail"
           style={styles.input}
           placeholderTextColor="#000"
+          autoCapitalize="none"
+          keyboardType="email-address"
         />
         {handleErrorEmail()}
 
@@ -77,11 +79,11 @@ const Login = () => {
         {handleErrorPassword()}
 
         <TouchableOpacity style={styles.loginButton} onPress={handleErrorForm}>
-          <Text style={styles.buttonText}>Entrar</Text>
+          <Text style={styles.loginButtonText}>Entrar</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.registerButton} onPress={() => router.replace('/')}> 
-          <Text style={styles.registerButtonText}>Voltar</Text>
+
+        <TouchableOpacity style={styles.voltarButton} onPress={() => router.replace('/')}>
+          <Text style={styles.voltarButtonText}>Voltar</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -95,55 +97,73 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   formContainer: {
-    width: '80%',
-    padding: 10,
     borderRadius: 15,
+    width: '88%',
     alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 3,
   },
   titleContainer: {
     alignItems: 'center',
     marginBottom: 30,
   },
   title: {
-    fontSize: 32,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: '#3a0ca3',
     marginTop: 10,
   },
   input: {
     backgroundColor: "#FFF",
-    padding: 15,
     borderRadius: 5,
     marginTop: 20,
-    width: '100%',
+    width: '80%',
+    height: 50,
+    fontSize: 14,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   loginButton: {
-    backgroundColor: '#1BD7BF',
+    backgroundColor: '#3a0ca3',
     padding: 15,
-    marginTop: 20,
     borderRadius: 5,
-    width: '100%',
+    marginTop: 20,
+    width: '80%',
     alignItems: 'center',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  registerButton: {
+  loginButtonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+  voltarButton: {
     backgroundColor: '#FFF',
     padding: 15,
     borderRadius: 5,
     marginTop: 20,
-    width: '100%',
+    width: '80%',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  voltarButtonText: {
+    color: '#64748B',
   },
   error: {
-    color: '#FF0000',
-    marginTop: 5,
-  },
-  buttonText: {
-    color: '#FFF',
-    textAlign: 'center',
-  },
-  registerButtonText: {
-    color: '#000',
-    textAlign: 'center',
+    color: 'red',
+    fontSize: 12,
+    alignSelf: 'flex-start',
+    marginLeft: '10%',
+    marginTop: 3,
   },
 });
 

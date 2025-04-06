@@ -120,9 +120,7 @@ function Home() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 10,
+    padding: 20,
     backgroundColor: "#F0F4F8",
   },
   title: {
@@ -136,6 +134,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    gap: 10,
   },
   card: {
     backgroundColor: "#fff",
