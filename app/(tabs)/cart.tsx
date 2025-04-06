@@ -1,148 +1,130 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-function Cart() {
-  const params = useLocalSearchParams();
+ function Cart() {
   const router = useRouter();
-  const [pagamentoConcluido, setPagamentoConcluido] = useState(false);
+  const { origem, destino, valorOriginal, valorDesconto } = useLocalSearchParams();
 
-  const valorOriginal = Number(params.valorOriginal) || 0;
-  const valorDesconto = Number(params.valorDesconto) || 0;
-  const valorFinal = valorOriginal - valorDesconto;
+  const temViagem = origem && destino && valorOriginal && valorDesconto;
 
-  const limparCompra = () => {
-    AsyncStorage.removeItem("dadosCompra");
-    setPagamentoConcluido(false);
-    router.replace("/cart");
-  };
+  if (!temViagem) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>🛒 Carrinho de Compra</Text>
+        <View style={styles.emptyBox}>
+          <Text style={styles.emptyText}>Seu carrinho está vazio.</Text>
+        </View>
+      </View>
+    );
+  }
 
-  const confirmarViagem = () => {
-    if (!params.origem || !params.destino || valorOriginal <= 0 || valorFinal <= 0) {
-      alert("Adicione um item ao carrinho.");
-      return;
-    }
-
-    AsyncStorage.removeItem("dadosCompra");
-    setPagamentoConcluido(true);
-  };
-
-  const novaViagem = () => {
-    setPagamentoConcluido(false);
-    router.replace("/home");
-  };
+  const valorOriginalNumber = parseFloat(valorOriginal as string);
+  const descontoNumber = parseFloat(valorDesconto as string);
+  const valorFinal = valorOriginalNumber - descontoNumber;
 
   return (
     <View style={styles.container}>
-      {pagamentoConcluido ? (
-        <>
-          <Text style={styles.pagamentoTexto}>Pagamento concluído</Text>
-          <TouchableOpacity style={styles.button} onPress={novaViagem}>
-            <Text style={styles.buttonText}>Nova Viagem</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <>
-          <View style={styles.viagemContainer}>
-            <Text style={styles.viagemText}>Origem: {params.origem}</Text>
-            <Text style={styles.viagemText}>Destino: {params.destino}</Text>
-          </View>
+      <Text style={styles.title}>🛒 Carrinho de Compra</Text>
 
-          <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>Valor Original: R${valorOriginal.toFixed(2)}</Text>
-            <Text style={styles.textAviso}>Você ganhou um desconto de R${valorDesconto.toFixed(2)}</Text>
-            <Text style={styles.totalText}>Valor a Pagar: R${valorFinal.toFixed(2)}</Text>
-          </View>
+      <View style={styles.infoBox}>
+        <Text style={styles.label}>Origem:</Text>
+        <Text style={styles.value}>{origem}</Text>
 
-          <TouchableOpacity style={styles.button} onPress={confirmarViagem}>
-            <Text style={styles.buttonText}>Confirmar Viagem</Text>
-          </TouchableOpacity>
+        <Text style={styles.label}>Destino:</Text>
+        <Text style={styles.value}>{destino}</Text>
 
-          <TouchableOpacity style={[styles.button, styles.removeButton]} onPress={limparCompra}>
-            <Text style={styles.buttonText}>Cancelar</Text>
-          </TouchableOpacity>
-        </>
-      )
-      }
-    </View >
+        <Text style={styles.label}>Valor original:</Text>
+        <Text style={styles.value}>R$ {valorOriginalNumber.toFixed(2)}</Text>
+
+        <Text style={styles.label}>Desconto aplicado:</Text>
+        <Text style={styles.value}>- R$ {descontoNumber.toFixed(2)}</Text>
+
+        <Text style={styles.totalLabel}>Valor final:</Text>
+        <Text style={styles.totalValue}>R$ {valorFinal.toFixed(2)}</Text>
+      </View>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          router.push({
+            pathname: "/pagamento",
+            params: {
+              origem,
+              destino,
+              valorFinal: valorFinal.toFixed(2),
+            },
+          })
+        }
+      >
+        <Text style={styles.buttonText}>Finalizar Pagamento</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    marginTop: "5%",
+    padding: 24,
+    backgroundColor: "#f0f0f0",
   },
-  viagemContainer: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-    alignItems: "flex-start",
-    width: "90%",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  viagemText: {
+  title: {
+    fontSize: 26,
     fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 24,
+    textAlign: "center",
+    color: "#333",
   },
-  totalContainer: {
+  infoBox: {
     backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 20,
-    width: "90%",
-    alignItems: "flex-start",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 4,
+    padding: 20,
+    borderRadius: 12,
+    elevation: 3,
   },
-  totalText: {
+  label: {
     fontSize: 16,
-    fontWeight: "bold",
-    
+    fontWeight: "600",
+    marginTop: 10,
+    color: "#555",
   },
-  textAviso: {
-    fontSize: 13,
-    color: "green",
+  value: {
+    fontSize: 16,
+    color: "#000",
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 20,
+    color: "#000",
+  },
+  totalValue: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#3a0ca3",
   },
   button: {
-    backgroundColor: '#3a0ca3',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 20,
-    width: '80%',
-    alignItems: 'center',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  removeButton: {
-    backgroundColor: "red",
+    backgroundColor: "#3a0ca3",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    marginTop: 30,
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
+    textAlign: "center",
     fontWeight: "bold",
   },
-  pagamentoTexto: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "green",
+  emptyBox: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 12,
+    elevation: 3,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#777",
     textAlign: "center",
-    marginBottom: 20,
   },
 });
-
 export default Cart;
