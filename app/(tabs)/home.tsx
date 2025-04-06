@@ -1,6 +1,9 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, ScrollView,} from "react-native";
+
+const screenWidth = Dimensions.get("window").width;
+const cardWidth = screenWidth / 2 - 30;
 
 type Viagens = {
   id: number;
@@ -28,9 +31,19 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
   return (
     <View style={styles.card}>
       <Image source={{ uri: viagens.image }} style={styles.image} />
-      <Text style={styles.text}>Origem: {viagens.origem}</Text>
-      <Text style={styles.text}>Destino: {viagens.destino}</Text>
-      <Text style={styles.text}>Valor: R${viagens.valor}</Text>
+      <Text style={styles.routeText}>
+        {viagens.origem} ➜ {viagens.destino}
+      </Text>
+      <Text style={styles.valorTexto}>
+        {viagens.valorPromocional ? (
+          <>
+            <Text style={styles.valorOriginal}>R$ {viagens.valor}</Text> {" "}
+            <Text style={styles.valorPromocional}>R$ {viagens.valorPromocional}</Text>
+          </>
+        ) : (
+          `Valor: R$ ${viagens.valor}`
+        )}
+      </Text>
 
       <TouchableOpacity
         style={styles.button}
@@ -54,103 +67,127 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
 };
 
 function Home() {
-  const viagem1 = {
-    id: 1,
-    origem: "São Paulo",
-    destino: "Rio de Janeiro",
-    image:
-      "https://www.viajanet.com.br/blog/wp-content/uploads/2018/08/foto-que-fica-embaixo-da-linha-fina.jpg",
-    valor: "150.00",
-    valorPromocional: "50.00",
-  };
-
-  const viagem2 = {
-    id: 2,
-    origem: "Lagoa Seca",
-    destino: "Campina Grande",
-    image:
-      "https://www.vaipradisney.com/blog/wp-content/uploads/2018/10/CRUZEIRO-DISNEY-ATLANTIS-NADO-GOLFINHO-BAHAMAS13.jpg",
-    valor: "936.53",
-    valorPromocional: "200.00",
-  };
-
-  const viagem3 = {
-    id: 3,
-    origem: "Nova Iorque",
-    destino: "Boston",
-    image:
-      "https://www.vaipradisney.com/blog/wp-content/uploads/2018/10/CRUZEIRO-DISNEY-ATLANTIS-NADO-GOLFINHO-BAHAMAS13.jpg",
-    valor: "115.00",
-    valorPromocional: "60.00",
-  };
+  const viagens = [
+    {
+      id: 1,
+      origem: "São Paulo",
+      destino: "Rio de Janeiro",
+      image:
+        "https://www.viajanet.com.br/blog/wp-content/uploads/2018/08/foto-que-fica-embaixo-da-linha-fina.jpg",
+      valor: "150.00",
+      valorPromocional: "50.00",
+    },
+    {
+      id: 2,
+      origem: "Lagoa Seca",
+      destino: "Campina Grande",
+      image:
+        "https://www.vaipradisney.com/blog/wp-content/uploads/2018/10/CRUZEIRO-DISNEY-ATLANTIS-NADO-GOLFINHO-BAHAMAS13.jpg",
+      valor: "936.53",
+      valorPromocional: "200.00",
+    },
+    {
+      id: 3,
+      origem: "Nova Iorque",
+      destino: "Boston",
+      image:
+        "https://www.vaipradisney.com/blog/wp-content/uploads/2018/10/CRUZEIRO-DISNEY-ATLANTIS-NADO-GOLFINHO-BAHAMAS13.jpg",
+      valor: "115.00",
+      valorPromocional: "60.00",
+    },
+    {
+      id: 4,
+      origem: "São Paulo",
+      destino: "Rio de Janeiro",
+      image:
+        "https://www.viajanet.com.br/blog/wp-content/uploads/2018/08/foto-que-fica-embaixo-da-linha-fina.jpg",
+      valor: "150.00",
+      valorPromocional: "50.00",
+    },
+  ];
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Viagens Disponíveis</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>🌍 Viagens Disponíveis</Text>
       <View style={styles.cardContainer}>
-        <TripCard viagens={viagem1} />
-        <TripCard viagens={viagem2} />
-        <TripCard viagens={viagem3} />
+        {viagens.map((viagem) => (
+          <TripCard key={viagem.id} viagens={viagem} />
+        ))}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f8f8f8",
-    padding: 10,
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 10,
+    backgroundColor: "#F0F4F8",
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
+    color: "#333",
   },
   cardContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around",
-    alignItems: "flex-start",
-    marginTop: 10,
+    justifyContent: "space-between",
   },
   card: {
     backgroundColor: "#fff",
     padding: 15,
-    margin: 10,
-    borderRadius: 10,
+    marginBottom: 20,
+    borderRadius: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 8,
+    elevation: 4,
     alignItems: "center",
-    width: 180,
-    height: 350,
-    justifyContent: "space-between",
+    width: cardWidth,
   },
   image: {
-    width: 160,
+    width: "100%",
     height: 100,
     borderRadius: 10,
+    marginBottom: 10,
   },
-  text: {
+  routeText: {
     fontSize: 16,
-    marginVertical: 5,
+    fontWeight: "600",
     textAlign: "center",
+    marginBottom: 5,
+    color: "#444",
+  },
+  valorTexto: {
+    fontSize: 15,
+    textAlign: "center",
+    marginBottom: 10,
+    color: "#222",
+  },
+  valorOriginal: {
+    textDecorationLine: "line-through",
+    color: "#999",
+  },
+  valorPromocional: {
+    fontWeight: "bold",
+    color: "#d62828",
   },
   button: {
     backgroundColor: "#3a0ca3",
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderRadius: 5,
-    marginTop: 10,
+    borderRadius: 8,
+    width: "100%",
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+    textAlign: "center",
   },
 });
 

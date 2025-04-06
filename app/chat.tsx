@@ -29,16 +29,16 @@ const Colors = {
 };
 
 const Chat = () => {
+  const params = useLocalSearchParams();
   const scrollRef = useRef<FlatList<Message>>(null);
-  const router = useLocalSearchParams();
-  const [userLogged] = useState("User");
+  const [userLogged] = useState(params.username as string);
   const [chat, setChat] = useState<{ messages: Message[] }>({ messages: [] });
   const [message, setMessage] = useState("");
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // const ws = new WebSocket('ws://10.5.1.155:3000');
-    const ws = new WebSocket('ws://192.168.15.105'); //ipv4 leal dia 04/04
+    const ws = new WebSocket('ws://10.0.0.25:3000');
+   // const ws = new WebSocket('ws://192.168.15.105'); //ipv4 leal dia 04/04
 
     wsRef.current = ws;
 

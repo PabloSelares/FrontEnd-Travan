@@ -17,7 +17,8 @@ function Register() {
   const router = useRouter();
 
   
-  const SERVER_URL = 'http://192.168.15.105'; //ipv4 leal dia 04/04
+  const SERVER_URL = 'http://10.0.0.25:3000';
+  //ipv4 leal dia 04/04
   //Meu IPV4 (tem que mudar para)
 
   const handleRegister = async () => {

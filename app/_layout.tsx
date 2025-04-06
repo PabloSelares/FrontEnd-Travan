@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import { TouchableOpacity, Text } from "react-native";
 import "react-native-reanimated";
 
-
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -33,6 +32,22 @@ export default function RootLayout() {
       <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="register" options={{ headerShown: false }} />
+      
+      <Stack.Screen 
+        name="changeName" 
+        options={{ 
+          headerShown: true,
+          headerLeft: () => (
+            <TouchableOpacity
+            onPress={() => router.push("/(tabs)/home")}
+              style={{ padding: 10, marginLeft: 15 }}
+            >
+              <Ionicons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
+          ),
+        }} 
+      />
+
       <Stack.Screen
         name="chat"
         options={{
@@ -48,7 +63,7 @@ export default function RootLayout() {
           ),
         }}
       />
-      <Stack.Screen name="changeName" options={{ headerShown: false }} />
+      
       <Stack.Screen name="carrinho" options={{ headerShown: false }} />
     </Stack>
   );
