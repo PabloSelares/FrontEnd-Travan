@@ -1,6 +1,14 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, ScrollView,} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 const cardWidth = screenWidth / 2 - 30;
@@ -21,12 +29,12 @@ interface ViagensDisponiveis {
 const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
   const router = useRouter();
 
-  function entrarEmPromocao(viagem: Viagens): Viagens {
-    if (viagem.valorPromocional) {
-      return { ...viagem, valor: viagem.valorPromocional };
-    }
-    return viagem;
-  }
+  const valorOriginal = parseFloat(viagens.valor);
+  const valorPromocional = viagens.valorPromocional
+    ? parseFloat(viagens.valorPromocional)
+    : null;
+
+  const valorFinal = valorPromocional ? valorOriginal - valorPromocional : null;
 
   return (
     <View style={styles.card}>
@@ -34,28 +42,26 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
       <Text style={styles.routeText}>
         {viagens.origem} ➜ {viagens.destino}
       </Text>
-      <Text style={styles.valorTexto}>
-        {viagens.valorPromocional ? (
-          <>
-            <Text style={styles.valorOriginal}>R$ {viagens.valor}</Text> {" "}
-            <Text style={styles.valorPromocional}>R$ {viagens.valorPromocional}</Text>
-          </>
-        ) : (
-          `Valor: R$ ${viagens.valor}`
-        )}
-      </Text>
+
+      {valorPromocional ? (
+        <View style={styles.valorTexto}>
+          <Text style={styles.valorOriginal}>De: R$ {formatarValor(valorOriginal)}</Text>
+          <Text style={styles.valorFinal}>  Por apenas: R$ {formatarValor(valorFinal!)}</Text>
+        </View>
+      ) : (
+        <Text style={styles.valorSemDesconto}>R$ {formatarValor(valorOriginal)}</Text>
+      )}
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          const viagemComDesconto = entrarEmPromocao(viagens);
           router.push({
             pathname: "/(tabs)/cart",
             params: {
-              origem: viagemComDesconto.origem,
-              destino: viagemComDesconto.destino,
+              origem: viagens.origem,
+              destino: viagens.destino,
               valorOriginal: viagens.valor,
-              valorDesconto: viagemComDesconto.valor,
+              valorDesconto: valorPromocional?.toString() || viagens.valor,
             },
           });
         }}
@@ -93,7 +99,7 @@ function Home() {
       image:
         "https://www.vaipradisney.com/blog/wp-content/uploads/2018/10/CRUZEIRO-DISNEY-ATLANTIS-NADO-GOLFINHO-BAHAMAS13.jpg",
       valor: "115.00",
-      valorPromocional: "60.00",
+      valorPromocional: "50.00",
     },
     {
       id: 4,
@@ -116,6 +122,13 @@ function Home() {
       </View>
     </ScrollView>
   );
+}
+
+function formatarValor(valor: number) {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 }
 
 const styles = StyleSheet.create({
@@ -163,18 +176,29 @@ const styles = StyleSheet.create({
     color: "#444",
   },
   valorTexto: {
-    fontSize: 15,
-    textAlign: "center",
     marginBottom: 10,
-    color: "#222",
+    alignItems: "center",
   },
   valorOriginal: {
     textDecorationLine: "line-through",
     color: "#999",
+    fontSize: 14,
   },
   valorPromocional: {
     fontWeight: "bold",
     color: "#d62828",
+    fontSize: 16,
+  },
+  valorFinal: {
+    fontSize: 14,
+    color: "#3a0ca3",
+    fontWeight: "600",
+  },
+  valorSemDesconto: {
+    fontWeight: "bold",
+    color: "#333",
+    fontSize: 16,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: "#3a0ca3",
