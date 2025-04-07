@@ -46,7 +46,7 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
       {valorPromocional ? (
         <View style={styles.valorTexto}>
           <Text style={styles.valorOriginal}>De: R$ {formatarValor(valorOriginal)}</Text>
-          <Text style={styles.valorFinal}>  Por apenas: R$ {formatarValor(valorFinal!)}</Text>
+          <Text style={styles.valorFinal}>  Por apenas:     R$ {formatarValor(valorFinal!)}</Text>
         </View>
       ) : (
         <Text style={styles.valorSemDesconto}>R$ {formatarValor(valorOriginal)}</Text>
@@ -181,16 +181,12 @@ const styles = StyleSheet.create({
   },
   valorOriginal: {
     textDecorationLine: "line-through",
-    color: "#999",
-    fontSize: 14,
-  },
-  valorPromocional: {
-    fontWeight: "bold",
-    color: "#d62828",
-    fontSize: 16,
+    color: "red",
+    fontSize: 12,
   },
   valorFinal: {
-    fontSize: 14,
+    textAlign: "center",
+    fontSize: 15,
     color: "#3a0ca3",
     fontWeight: "600",
   },

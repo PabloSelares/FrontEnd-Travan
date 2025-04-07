@@ -37,6 +37,8 @@ export default function RootLayout() {
       <Stack.Screen 
         name="changeName" 
         options={{ 
+          headerTitleAlign: "center",
+          title: 'Alterar Nome',
           headerShown: true,
           headerLeft: () => (
             <TouchableOpacity
@@ -53,7 +55,7 @@ export default function RootLayout() {
         name="chat"
         options={{
           headerTitleAlign: "center",
-          title: 'AI ecommerce Mobile',
+          title: 'AI Chat Travan',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.replace("/(tabs)/home")}
@@ -64,7 +66,6 @@ export default function RootLayout() {
           ),
         }}
       />
-      
       <Stack.Screen name="carrinho" options={{ headerShown: false }} />
     </Stack>
   );

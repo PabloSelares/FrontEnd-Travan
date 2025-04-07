@@ -1,5 +1,13 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { FlatList, SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 
@@ -21,11 +29,11 @@ interface BalloonProps {
 }
 
 const Colors = {
-  primary: '#3a0ca3',
-  secondary: '#f0f0f0',
-  white: '#ffffff',
-  black: '#000000',
-  light: '#e0e0e0',
+  primary: "#3a0ca3",
+  secondary: "#f0f0f0",
+  white: "#ffffff",
+  black: "#000000",
+  light: "#e0e0e0",
 };
 
 const Chat = () => {
@@ -37,8 +45,8 @@ const Chat = () => {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://10.0.0.25:3000');
-   // const ws = new WebSocket('ws://192.168.15.105'); //ipv4 leal dia 04/04
+    const ws = new WebSocket("ws://10.5.4.97:3000");
+    // const ws = new WebSocket('ws://192.168.15.105'); //ipv4 leal dia 04/04
 
     wsRef.current = ws;
 
@@ -46,16 +54,20 @@ const Chat = () => {
       console.log("WebSocket conectado com sucesso.");
     };
     ws.onmessage = async (event) => {
-      console.log("Dados brutos recebidos no WebSocket:", event.data); 
-        try {
-          const msg = JSON.parse(event.data);
-          setChat(prev => ({
-            messages: [...prev.messages, msg]
-          }));
-        } catch (error) {
-          console.error("Erro ao converter JSON:", error, "Dados recebidos:", event.data);
-        }
-      
+      console.log("Dados brutos recebidos no WebSocket:", event.data);
+      try {
+        const msg = JSON.parse(event.data);
+        setChat((prev) => ({
+          messages: [...prev.messages, msg],
+        }));
+      } catch (error) {
+        console.error(
+          "Erro ao converter JSON:",
+          error,
+          "Dados recebidos:",
+          event.data
+        );
+      }
     };
 
     return () => {
@@ -77,9 +89,13 @@ const Chat = () => {
         ref={scrollRef}
         data={chat.messages}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item }) => <Balloon message={item} userLogged={userLogged} />}
+        renderItem={({ item }) => (
+          <Balloon message={item} userLogged={userLogged} />
+        )}
         ListEmptyComponent={() => (
-          <Text style={{ alignSelf: 'center', color: '#848484' }}>Sem mensagens no momento</Text>
+          <Text style={{ alignSelf: "center", color: "#848484" }}>
+            Sem mensagens no momento
+          </Text>
         )}
       />
 
@@ -88,7 +104,7 @@ const Chat = () => {
           <TextInput
             style={styles.messageTextInput}
             placeholder="Digite sua mensagem..."
-            placeholderTextColor={Colors.light}
+            placeholderTextColor= "rgba(58, 12, 163, 0.5)"
             value={message}
             multiline
             onChangeText={setMessage}
@@ -114,17 +130,33 @@ const Balloon = ({ message, userLogged }: BalloonProps) => {
   const isSent = userLogged === message.sentBy;
 
   return (
-    <View style={[styles.bubbleWrapper, isSent ? styles.bubbleWrapperSent : styles.bubbleWrapperReceived]}>
-    <View style={[styles.balloon, isSent ? styles.balloonSent : styles.balloonReceived]}>
-      {!isSent && <Text style={styles.senderName}>{message.sentBy}</Text>}
-      <Text style={isSent ? styles.balloonTextSent : styles.balloonTextReceived}>{message.text}</Text>
-      <Text style={styles.timestamp}>
-        {message.timestamp
-          ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          : "Hora indisponível"}
-      </Text>
-    </View>
- 
+    <View
+      style={[
+        styles.bubbleWrapper,
+        isSent ? styles.bubbleWrapperSent : styles.bubbleWrapperReceived,
+      ]}
+    >
+      <View
+        style={[
+          styles.balloon,
+          isSent ? styles.balloonSent : styles.balloonReceived,
+        ]}
+      >
+        {!isSent && <Text style={styles.senderName}>{message.sentBy}</Text>}
+        <Text
+          style={isSent ? styles.balloonTextSent : styles.balloonTextReceived}
+        >
+          {message.text}
+        </Text>
+        <Text style={styles.timestamp}>
+          {message.timestamp
+            ? new Date(message.timestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "Hora indisponível"}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -133,11 +165,11 @@ const styles = StyleSheet.create({
   emptyMessage: {
     alignSelf: "center",
     color: "#848484",
-    marginTop: 20
+    marginTop: 20,
   },
   bubbleWrapper: {
     marginVertical: 4,
-    maxWidth: '80%',
+    maxWidth: "80%",
   },
   bubbleWrapperSent: {
     alignSelf: "flex-end",
@@ -154,10 +186,18 @@ const styles = StyleSheet.create({
   balloonSent: {
     backgroundColor: Colors.primary,
     borderBottomRightRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   balloonReceived: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: "#fff",
     borderBottomLeftRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   balloonTextSent: {
     color: Colors.white,
@@ -168,15 +208,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   senderName: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
-    color: Colors.black,
+    color: "#3a0ca3",
     fontSize: 12,
   },
   timestamp: {
     fontSize: 10,
-    color: 'rgba(0,0,0,0.4)',
-    textAlign: 'right',
+    color: "rgb(255, 255, 255)",
+    textAlign: "right",
     marginTop: 4,
   },
   messageTextInputContainer: {
@@ -191,7 +231,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 40,
     maxHeight: 100,
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginRight: 8,
