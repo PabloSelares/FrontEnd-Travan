@@ -1,13 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import {
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity,} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 
@@ -45,28 +37,22 @@ const Chat = () => {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://10.5.4.97:3000");
-    // const ws = new WebSocket('ws://192.168.15.105'); //ipv4 leal dia 04/04
-
+    const ws = new WebSocket("ws://10.5.5.197:3000");
     wsRef.current = ws;
 
     ws.onopen = () => {
       console.log("WebSocket conectado com sucesso.");
     };
-    ws.onmessage = async (event) => {
-      console.log("Dados brutos recebidos no WebSocket:", event.data);
+
+    ws.onmessage = (event) => {
       try {
-        const msg = JSON.parse(event.data);
-        setChat((prev) => ({
-          messages: [...prev.messages, msg],
+        const json = JSON.parse(event.data);
+        setChat((prevChat) => ({
+          messages: [...prevChat.messages, json],
         }));
-      } catch (error) {
-        console.error(
-          "Erro ao converter JSON:",
-          error,
-          "Dados recebidos:",
-          event.data
-        );
+        scrollRef.current?.scrollToEnd({ animated: true });
+      } catch (error: any) {
+        console.error("Erro ao processar mensagem:", error.message);
       }
     };
 
@@ -76,10 +62,16 @@ const Chat = () => {
   }, []);
 
   const sendMessage = () => {
-    if (message.trim() && wsRef.current) {
+    try {
       const newMessage = new Message(message, userLogged);
-      wsRef.current.send(JSON.stringify(newMessage));
+      setChat((prevChat) => ({
+        messages: [...prevChat.messages, newMessage],
+      }));
+
+      wsRef.current?.send(JSON.stringify(newMessage));
       setMessage("");
+    } catch (error: any) {
+      console.error("Erro ao enviar mensagem:", error.message);
     }
   };
 
@@ -104,7 +96,7 @@ const Chat = () => {
           <TextInput
             style={styles.messageTextInput}
             placeholder="Digite sua mensagem..."
-            placeholderTextColor= "rgba(58, 12, 163, 0.5)"
+            placeholderTextColor="rgba(58, 12, 163, 0.5)"
             value={message}
             multiline
             onChangeText={setMessage}

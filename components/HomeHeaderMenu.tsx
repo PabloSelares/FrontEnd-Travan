@@ -42,7 +42,7 @@ function HomeHeaderMenu(userInfo: any) {
       />
       <Menu.Item
         onPress={() => {
-          router.replace('/services/ChangeName');
+          router.replace('/chat');
         }}
         title="Conversar com a IA"
         titleStyle={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}
