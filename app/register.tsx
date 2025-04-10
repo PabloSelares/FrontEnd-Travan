@@ -21,7 +21,7 @@ function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const router = useRouter();
-  const SERVER_URL = 'http://10.5.5.197:3000';
+  const SERVER_URL = 'http://10.5.4.194:3000';
 
   const handleRegister = async () => {
     setFormSubmitted(true);
@@ -60,12 +60,11 @@ function Register() {
         password: senha.value,
         tipo: checked,
       };
-
-      const result = await httpService.post(`${SERVER_URL}/api/user`, json);
-
+      const response = await httpService.post(`${SERVER_URL}/api/user`, json);
+      const result = await response.json();
       if (result.message === 'User created successfully') {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-        router.replace('/home');
+        router.replace('/login');
       } else {
         Alert.alert('Erro', result.message || 'Erro ao registrar');
       }

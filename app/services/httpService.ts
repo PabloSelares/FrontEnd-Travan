@@ -14,7 +14,7 @@ const service = {
             },
             body: JSON.stringify(data),
         })
-        return result.json()
+        return result
        
     }
 }
