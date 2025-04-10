@@ -3,12 +3,56 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { TextInput, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import httpService from '../app/services/httpService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 const Login = () => {
   const router = useRouter();
   const [email, setEmail] = useState({ value: '', dirty: false });
   const [password, setPassword] = useState({ value: '', dirty: false });
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const SERVER_URL = 'http://10.5.4.194:3000';
+
+  const storeData = async (value: string) => {
+    try {
+      await AsyncStorage.setItem('token', value);
+    } catch (e) {
+      console.error("Erro ao armazenar o token:", e);
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const json = {
+        email: email.value,
+        password: password.value,
+      };
+      const response = await httpService.post(`${SERVER_URL}/api/user/login`, json);
+      const result = await response.json();
+
+      if (response.status == 200) {
+        const user = result.user;
+        console.log("User: " ,user);
+        const token = result.token;
+        console.log("Token: ", token);
+        storeData(token);
+        router.replace('/(tabs)/home');
+      } else if (result.status === 400) {
+        handleErrorEmail();
+        handleErrorPassword();
+      } else {
+        alert("Erro ao fazer login. Tente novamente mais tarde.");
+      }
+    } catch (error) {
+      
+      handleErrorForm();
+      console.error("Erro na requisição:", error);
+      alert("Erro de conexão. Verifique sua internet ou tente novamente mais tarde.");
+    }
+  }
+
 
   const handleErrorEmail = () => {
     if (!email.value && email.dirty) {
@@ -59,7 +103,7 @@ const Login = () => {
           <Text style={styles.title}>TraVan</Text>
         </View>
 
-        <TextInput 
+        <TextInput
           onChangeText={(text) => setEmail({ value: text, dirty: true })}
           placeholder="E-mail"
           style={styles.input}
@@ -69,7 +113,7 @@ const Login = () => {
         />
         {handleErrorEmail()}
 
-        <TextInput 
+        <TextInput
           onChangeText={(text) => setPassword({ value: text, dirty: true })}
           placeholder="Senha"
           secureTextEntry
@@ -78,7 +122,7 @@ const Login = () => {
         />
         {handleErrorPassword()}
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleErrorForm}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Entrar</Text>
         </TouchableOpacity>
 
