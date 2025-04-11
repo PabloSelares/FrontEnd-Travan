@@ -1,5 +1,7 @@
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import httpService from "../services/httpService";
+
 import {
   StyleSheet,
   Text,
@@ -9,48 +11,34 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const screenWidth = Dimensions.get("window").width;
 const cardWidth = screenWidth / 2 - 30;
+const [viagens,setViagens]=useState<Viagem[]>([]);
 
-type Viagens = {
-  id: number;
+
+type Viagem = {
+  id: string;
   origem: string;
   destino: string;
-  image: string;
-  valor: string;
-  valorPromocional?: string;
+  preco: number;
+  desconto?: number;
 };
 
 interface ViagensDisponiveis {
-  viagens: Viagens;
+  viagens: Viagem;
 }
 
-const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
+const TripCard: React.FC<ViagensDisponiveis> = ({viagens}) => {
   const router = useRouter();
-
-  const valorOriginal = parseFloat(viagens.valor);
-  const valorPromocional = viagens.valorPromocional
-    ? parseFloat(viagens.valorPromocional)
-    : null;
-
-  const valorFinal = valorPromocional ? valorOriginal - valorPromocional : null;
+  const valorOriginal = viagens.preco;
+  const valorPromocional = viagens.desconto ? (viagens.desconto) : null;
+  
 
   return (
     <View style={styles.card}>
-      <Image source={{ uri: viagens.image }} style={styles.image} />
-      <Text style={styles.routeText}>
-        {viagens.origem} ➜ {viagens.destino}
-      </Text>
-
-      {valorPromocional ? (
-        <View style={styles.valorTexto}>
-          <Text style={styles.valorOriginal}>De: R$ {formatarValor(valorOriginal)}</Text>
-          <Text style={styles.valorFinal}>  Por apenas:     R$ {formatarValor(valorFinal!)}</Text>
-        </View>
-      ) : (
-        <Text style={styles.valorSemDesconto}>R$ {formatarValor(valorOriginal)}</Text>
-      )}
+    
 
       <TouchableOpacity
         style={styles.button}
@@ -60,8 +48,8 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
             params: {
               origem: viagens.origem,
               destino: viagens.destino,
-              valorOriginal: viagens.valor,
-              valorDesconto: valorPromocional?.toString() || viagens.valor,
+              valorOriginal: viagens.preco,
+              valorDesconto: valorPromocional?.toString() || viagens.preco.toString(),
             },
           });
         }}
@@ -73,45 +61,38 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
 };
 
 function Home() {
-  const viagens = [
-    {
-      id: 1,
-      origem: "São Paulo",
-      destino: "Rio de Janeiro",
-      image:
-        "https://www.viajanet.com.br/blog/wp-content/uploads/2018/08/foto-que-fica-embaixo-da-linha-fina.jpg",
-      valor: "150.00",
-      valorPromocional: "50.00",
-    },
-    {
-      id: 2,
-      origem: "Lagoa Seca",
-      destino: "Campina Grande",
-      image:
-        "https://www.vaipradisney.com/blog/wp-content/uploads/2018/10/CRUZEIRO-DISNEY-ATLANTIS-NADO-GOLFINHO-BAHAMAS13.jpg",
-      valor: "936.53",
-      valorPromocional: "200.00",
-    },
-    {
-      id: 3,
-      origem: "Nova Iorque",
-      destino: "Boston",
-      image:
-        "https://www.vaipradisney.com/blog/wp-content/uploads/2018/10/CRUZEIRO-DISNEY-ATLANTIS-NADO-GOLFINHO-BAHAMAS13.jpg",
-      valor: "115.00",
-      valorPromocional: "50.00",
-    },
-    {
-      id: 4,
-      origem: "São Paulo",
-      destino: "Rio de Janeiro",
-      image:
-        "https://www.viajanet.com.br/blog/wp-content/uploads/2018/08/foto-que-fica-embaixo-da-linha-fina.jpg",
-      valor: "150.00",
-      valorPromocional: "50.00",
-    },
-  ];
+  
+  useEffect(() => {
+    const buscarDadosProtegidos = async () => {
+      try {
+     
+        const token = await AsyncStorage.getItem('token');
 
+        if (!token) {
+          console.warn("Token não encontrado. Usuário precisa logar.");
+          return;
+        }
+
+        // Faz a requisição com o token no header Authorization
+        const data = await httpService.get('http://10.0.0.25:3000/api/viagens', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (data.ok) {
+          const response = await data.json();
+          setViagens(response);
+        } else {
+          console.warn("Erro na resposta:", data.status);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados protegidos:", error);
+      }
+    };
+
+    buscarDadosProtegidos();
+  }, []);
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>🌍 Viagens Disponíveis</Text>
