@@ -37,7 +37,7 @@ const Chat = () => {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://10.5.5.197:3000");
+    const ws = new WebSocket("ws://10.0.0.25:3000");
     wsRef.current = ws;
 
     ws.onopen = () => {

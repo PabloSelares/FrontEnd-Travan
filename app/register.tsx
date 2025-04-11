@@ -21,7 +21,7 @@ function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const router = useRouter();
-  const SERVER_URL = 'http://10.5.4.194:3000';
+  const SERVER_URL = 'http://10.0.0.25:3000';
 
   const handleRegister = async () => {
     setFormSubmitted(true);

@@ -13,7 +13,7 @@ const Login = () => {
   const [email, setEmail] = useState({ value: '', dirty: false });
   const [password, setPassword] = useState({ value: '', dirty: false });
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const SERVER_URL = 'http://10.5.4.194:3000';
+  const SERVER_URL = 'http://10.0.0.25:3000';
 
   const storeData = async (value: string) => {
     try {
@@ -34,9 +34,9 @@ const Login = () => {
 
       if (response.status == 200) {
         const user = result.user;
-        console.log("User: " ,user);
+
         const token = result.token;
-        console.log("Token: ", token);
+
         storeData(token);
         router.replace('/(tabs)/home');
       } else if (result.status === 400) {
