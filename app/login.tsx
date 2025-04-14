@@ -13,7 +13,7 @@ const Login = () => {
   const [email, setEmail] = useState({ value: '', dirty: false });
   const [password, setPassword] = useState({ value: '', dirty: false });
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const SERVER_URL = 'http://10.5.3.45:3000';
+  const SERVER_URL = 'http://192.168.15.105:3000';
 
   const storeData = async (value: string) => {
     try {
@@ -37,8 +37,13 @@ const Login = () => {
 
         const token = result.token;
 
-        storeData(token);
-        router.replace('/(tabs)/home');
+        await storeData(token);
+        router.push({
+          pathname: "/(tabs)/home",
+          params: {
+            email: email.value,
+          },
+        })
       } else if (result.status === 400) {
         handleErrorEmail();
         handleErrorPassword();
@@ -46,7 +51,7 @@ const Login = () => {
         alert("Erro ao fazer login. Tente novamente mais tarde.");
       }
     } catch (error) {
-      
+
       handleErrorForm();
       console.error("Erro na requisição:", error);
       alert("Erro de conexão. Verifique sua internet ou tente novamente mais tarde.");
