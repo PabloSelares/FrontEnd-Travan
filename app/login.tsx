@@ -13,7 +13,7 @@ const Login = () => {
   const [email, setEmail] = useState({ value: '', dirty: false });
   const [password, setPassword] = useState({ value: '', dirty: false });
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const SERVER_URL = 'http://10.0.0.25:3000';
+  const SERVER_URL = 'http://10.5.3.45:3000';
 
   const storeData = async (value: string) => {
     try {
