@@ -66,9 +66,10 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
               origem: viagens.origem,
               destino: viagens.destino,
               valorOriginal: valorOriginal.toString(),
+              desconto: desconto.toString(),
               valorDesconto: temDesconto
                 ? valorComDesconto.toString()
-                : valorOriginal.toString(),
+                : valorOriginal,
             },
           });
         }}
