@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import httpService from "../services/httpService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   StyleSheet,
@@ -11,7 +12,6 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const screenWidth = Dimensions.get("window").width;
 const cardWidth = screenWidth / 2 - 30;
@@ -81,12 +81,12 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
 };
 
 function Home() {
-const [viagens,setViagens]=useState<Viagem[]>([]);
-  
+  const [viagens, setViagens] = useState<Viagem[]>([]);
+
   useEffect(() => {
     const buscarDadosProtegidos = async () => {
       try {
-     
+
         const token = await AsyncStorage.getItem('token');
 
         if (!token) {
@@ -95,7 +95,7 @@ const [viagens,setViagens]=useState<Viagem[]>([]);
         }
 
         // Faz a requisição com o token no header Authorization
-        const response = await httpService.get('http://10.5.3.45:3000/api/viagens', {
+        const response = await httpService.get('http://192.168.15.105:3000/api/viagens', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
