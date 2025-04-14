@@ -1,6 +1,5 @@
 import { Tabs } from "expo-router";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { PaperProvider } from "react-native-paper";
 import HomeHeaderMenu from "@/components/HomeHeaderMenu";
 export default function TabLayout() {
