@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
  function Cart() {
   const router = useRouter();
-  const { origem, destino, valorOriginal, valorDesconto } = useLocalSearchParams();
+  const { origem, destino, valorOriginal, desconto, valorDesconto } = useLocalSearchParams();
 
   const temViagem = origem && destino && valorOriginal && valorDesconto;
 
@@ -19,8 +19,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
   }
 
   const valorOriginalNumber = parseFloat(valorOriginal as string);
-  const descontoNumber = parseFloat(valorDesconto as string);
-  const valorFinal = valorOriginalNumber - descontoNumber;
+  const descontoNumber = parseFloat(desconto as string);
+  const valorFinal = parseFloat(valorDesconto as string);
 
   return (
     <View style={styles.container}>
