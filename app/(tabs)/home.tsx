@@ -15,11 +15,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const screenWidth = Dimensions.get("window").width;
 const cardWidth = screenWidth / 2 - 30;
-const [viagens,setViagens]=useState<Viagem[]>([]);
 
 
 type Viagem = {
-  id: string;
+  _id: string;
   origem: string;
   destino: string;
   preco: number;
@@ -30,15 +29,33 @@ interface ViagensDisponiveis {
   viagens: Viagem;
 }
 
-const TripCard: React.FC<ViagensDisponiveis> = ({viagens}) => {
+const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
   const router = useRouter();
   const valorOriginal = viagens.preco;
-  const valorPromocional = viagens.desconto ? (viagens.desconto) : null;
-  
+  const desconto = viagens.desconto || 0;
+  const valorComDesconto = valorOriginal - (valorOriginal * (desconto / 100));
+  const temDesconto = desconto > 0;
 
   return (
     <View style={styles.card}>
-    
+      <Image
+        source={{ uri: "https://source.unsplash.com/featured/?travel" }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+      <Text style={styles.routeText}>
+        {viagens.origem} → {viagens.destino}
+      </Text>
+      <View style={styles.valorTexto}>
+        {temDesconto ? (
+          <>
+            <Text style={styles.valorOriginal}>{formatarValor(valorOriginal)}</Text>
+            <Text style={styles.valorFinal}>{formatarValor(valorComDesconto)}</Text>
+          </>
+        ) : (
+          <Text style={styles.valorSemDesconto}>{formatarValor(valorOriginal)}</Text>
+        )}
+      </View>
 
       <TouchableOpacity
         style={styles.button}
@@ -48,8 +65,10 @@ const TripCard: React.FC<ViagensDisponiveis> = ({viagens}) => {
             params: {
               origem: viagens.origem,
               destino: viagens.destino,
-              valorOriginal: viagens.preco,
-              valorDesconto: valorPromocional?.toString() || viagens.preco.toString(),
+              valorOriginal: valorOriginal.toString(),
+              valorDesconto: temDesconto
+                ? valorComDesconto.toString()
+                : valorOriginal.toString(),
             },
           });
         }}
@@ -61,6 +80,7 @@ const TripCard: React.FC<ViagensDisponiveis> = ({viagens}) => {
 };
 
 function Home() {
+const [viagens,setViagens]=useState<Viagem[]>([]);
   
   useEffect(() => {
     const buscarDadosProtegidos = async () => {
@@ -74,17 +94,17 @@ function Home() {
         }
 
         // Faz a requisição com o token no header Authorization
-        const data = await httpService.get('http://10.0.0.25:3000/api/viagens', {
+        const response = await httpService.get('http://10.5.3.45:3000/api/viagens', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          timeout: 5000
         });
 
-        if (data.ok) {
-          const response = await data.json();
-          setViagens(response);
+        if (response.status == 200) {
+          setViagens(response.data);
         } else {
-          console.warn("Erro na resposta:", data.status);
+          console.warn("Erro na resposta:", response.status);
         }
       } catch (error) {
         console.error("Erro ao buscar dados protegidos:", error);
@@ -93,12 +113,13 @@ function Home() {
 
     buscarDadosProtegidos();
   }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>🌍 Viagens Disponíveis</Text>
       <View style={styles.cardContainer}>
         {viagens.map((viagem) => (
-          <TripCard key={viagem.id} viagens={viagem} />
+          <TripCard key={viagem._id} viagens={viagem} />
         ))}
       </View>
     </ScrollView>
