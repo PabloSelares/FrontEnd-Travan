@@ -1,11 +1,45 @@
-import { Tabs } from "expo-router";
+import { Tabs, useLocalSearchParams } from "expo-router";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { PaperProvider } from "react-native-paper";
 import HomeHeaderMenu from "@/components/HomeHeaderMenu";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import httpService from "../services/httpService";
+
+
 export default function TabLayout() {
+  const params = useLocalSearchParams();
+  const { email } = params;
+  const [nome, setNome] = useState<String>();
+  useEffect(() => {
+    const buscarUsarioLogado = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          console.warn("Token não encontrado. Usuário precisa logar.");
+          return;
+        }
+        const response = await httpService.get(`http://10.5.3.45:3000/api/ser/findByEmail/${email}}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          timeout: 5000
+        });
+
+        if (response.status == 200) {
+          setNome(response.data.name);
+        } else {
+          console.warn("Erro na resposta:", response.status);
+        }
+
+      } catch (e) { }
+    }
+    buscarUsarioLogado();
+  }, [email]);
+  
   const userLogged = {
-    name: "Gabryell Leal Rocha",
-    email: "gabryell@unifacisa.com.br",
+    name: nome,
+    email: email
   };
   return (
     <PaperProvider>
