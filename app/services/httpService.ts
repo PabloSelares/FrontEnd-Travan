@@ -1,14 +1,16 @@
 import axios from "axios";
 
 const service = {
-    get: async (url: string, config={}) => {
-       const result= await axios.get(url,config)
-       const data = result.data
-       JSON.stringify(data)
-       return data
+    get: async (url: string, config = {}) => {
+        const result = await axios.get(url, config)
+        return {
+            status: result.status,
+            data: result.data
+        }
+
     },
-    post: async  (url: string, data: any) => {
-        const result= await fetch (url, {
+    post: async (url: string, data: any) => {
+        const result = await fetch(url, {
 
             method: 'POST',
             headers: {
@@ -17,7 +19,7 @@ const service = {
             body: JSON.stringify(data),
         })
         return result
-       
+
     }
 }
 export default service;
