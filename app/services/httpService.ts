@@ -9,17 +9,12 @@ const service = {
         }
 
     },
-    post: async (url: string, data: any) => {
-        const result = await fetch(url, {
-
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        return result
-
-    }
+    post: async (url: string, data: any, config = {}) => {
+        const result = await axios.post(url, data, config);
+        return {
+          status: result.status,
+          data: result.data,
+        };
+      },
 }
 export default service;
