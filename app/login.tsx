@@ -30,7 +30,7 @@ const Login = () => {
         password: password.value,
       };
       const response = await httpService.post(`${SERVER_URL}/api/user/login`, json);
-      const result = await response.json();
+      const result = await response.data;
 
       if (response.status == 200) {
         const user = result.user;
