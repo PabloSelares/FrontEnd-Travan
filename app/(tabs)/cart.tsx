@@ -1,10 +1,9 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
- function Cart() {
+function Cart() {
   const router = useRouter();
-  const { origem, destino, valorOriginal, desconto, valorDesconto } = useLocalSearchParams();
-
+  const { email, nome, id, idComprador, origem, destino, valorOriginal, desconto, valorDesconto } = useLocalSearchParams();
   const temViagem = origem && destino && valorOriginal && valorDesconto;
 
   if (!temViagem) {
@@ -37,10 +36,10 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
         <Text style={styles.value}>R$ {valorOriginalNumber.toFixed(2)}</Text>
 
         <Text style={styles.label}>Desconto aplicado:</Text>
-        <Text style={styles.value}>- R$ {descontoNumber.toFixed(2)}</Text>
+        <Text style={styles.value}>-{descontoNumber.toFixed(2)}%</Text>
 
         <Text style={styles.totalLabel}>Valor final:</Text>
-        <Text style={styles.totalValue}>R$ {valorFinal.toFixed(2)}</Text>
+        <Text style={styles.totalValue}>R$ {valorFinal}</Text>
       </View>
 
       <TouchableOpacity
@@ -49,6 +48,10 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
           router.push({
             pathname: "/pagamento",
             params: {
+              email,
+              nome,
+              idComprador: idComprador,
+              id,
               origem,
               destino,
               valorFinal: valorFinal.toFixed(2),
