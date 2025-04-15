@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import httpService from '../app/services/httpService';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
- function Pagamento() {
+function Pagamento() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const valorFinal = Number(params.valorFinal) || 0;
+  const email = params.email as string;
+  const nome = params.nome as string;
+  const id = params.id as string;
+  const idComprador = params.idComprador as string;
   const origem = params.origem as string;
   const destino = params.destino as string;
   const [formaPagamento, setFormaPagamento] = useState("");
   const opcoesPagamento = ["Cartão de Crédito", "Pix", "Boleto"];
-
+  const SERVER_URL = 'http://192.168.15.105:3000';
   useEffect(() => {
     if (valorFinal <= 0) {
       Alert.alert("Valor inválido.");
@@ -18,16 +24,72 @@ import { useLocalSearchParams, useRouter } from "expo-router";
     }
   }, []);
 
-  const realizarPagamento = () => {
+  const realizarPagamento = async () => {
+    const token = await AsyncStorage.getItem('token');
+
+    if (!token) {
+      Alert.alert("Token não encontrado. Faça login novamente.");
+      return;
+    }
+
     if (!formaPagamento) {
       Alert.alert("Selecione uma forma de pagamento.");
       return;
     }
 
-    Alert.alert("Pagamento realizado com sucesso via " + formaPagamento + "!");
-    router.replace("/home");
-  };
+    try {
+      console.log("nome comprador ", nome);
+      console.log("email comprador ", email);
+      console.log("id comprador ", idComprador);
+      console.log("id produto ", id)
 
+
+      const message = `Pagamento da viagem de ${nome} saindo de ${origem} para ${destino} realizado com sucesso! Em breve enviaremos um email para ${email} com os detalhes da sua viagem.`;
+
+      const json = {
+        produto: id,
+        comprador: idComprador,
+        message: message,
+      }
+        ;
+      const response = await httpService.post(
+        `${SERVER_URL}/api/compra`,
+        json,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          timeout: 5000,
+        }
+      )
+
+      if (response.status !== 201) {
+        throw new Error();
+      }
+      Alert.alert(
+        "Pagamento confirmado com sucesso!",
+        "Clique em OK para voltar à tela inicial.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              router.push({
+                pathname: "/(tabs)/home",
+                params: {
+                  email: email,
+                },
+              });
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    } catch (err) {
+      console.error("Erro ao realizar o pagamento:", err);
+      Alert.alert("Erro ao realizar o pagamento. Tente novamente.");
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -140,4 +202,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
- export default Pagamento;
+export default Pagamento;
