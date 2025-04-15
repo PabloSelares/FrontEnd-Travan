@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import httpService from "../services/httpService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,6 +11,7 @@ import {
   Image,
   Dimensions,
   ScrollView,
+  Alert,
 } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
@@ -27,10 +28,15 @@ type Viagem = {
 
 interface ViagensDisponiveis {
   viagens: Viagem;
+  email: string;
+  nome?: string;
+  idComprador?: string;
 }
 
-const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
+const TripCard: React.FC<ViagensDisponiveis> = ({ viagens, email, nome, idComprador }) => {
   const router = useRouter();
+
+
   const valorOriginal = viagens.preco;
   const desconto = viagens.desconto || 0;
   const valorComDesconto = valorOriginal - (valorOriginal * (desconto / 100));
@@ -63,6 +69,10 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
           router.push({
             pathname: "/(tabs)/cart",
             params: {
+              email: email,
+              nome: nome,
+              idComprador: idComprador,
+              id: viagens._id,
               origem: viagens.origem,
               destino: viagens.destino,
               valorOriginal: valorOriginal.toString(),
@@ -82,7 +92,39 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens }) => {
 
 function Home() {
   const [viagens, setViagens] = useState<Viagem[]>([]);
+  const { email: rawEmail } = useLocalSearchParams();
+  const email = Array.isArray(rawEmail) ? rawEmail[0] : rawEmail;
+  const [nome, setNome] = useState<string>();
+  const [idComprador, setIdComprador] = useState<string>();
+  useEffect(() => {
+    const buscarUsarioLogado = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          console.warn("Token não encontrado. Usuário precisa logar.");
+          return;
+        }
+        const response = await httpService.get(`http://192.168.15.105:3000/api/user/findByEmail/${email}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          timeout: 5000
+        });
 
+        if (response.status == 200) {
+          setNome(response.data.name);
+          setIdComprador(response.data._id);
+        } else {
+          throw new Error("Erro ao buscar usuário logado.");
+        }
+
+      } catch (e) { 
+        console.error("Erro ao buscar usuário logado:", e);
+        Alert.alert("Erro ao buscar usuário logado. Tente novamente mais tarde.");
+      }
+    }
+    buscarUsarioLogado();
+  }, [email]);
   useEffect(() => {
     const buscarDadosProtegidos = async () => {
       try {
@@ -119,9 +161,19 @@ function Home() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>🌍 Viagens Disponíveis</Text>
       <View style={styles.cardContainer}>
-        {viagens.map((viagem) => (
-          <TripCard key={viagem._id} viagens={viagem} />
-        ))}
+        {nome && idComprador ? (
+          viagens.map((viagem) => (
+            <TripCard
+              key={viagem._id}
+              viagens={viagem}
+              email={email}
+              nome={nome}
+              idComprador={idComprador}
+            />
+          ))
+        ) : (
+          <Text>Carregando usuário...</Text>
+        )}
       </View>
     </ScrollView>
   );
