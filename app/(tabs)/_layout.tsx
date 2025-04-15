@@ -10,7 +10,7 @@ import httpService from "../services/httpService";
 export default function TabLayout() {
   const params = useLocalSearchParams();
   const { email } = params;
-  const [nome, setNome] = useState<String>();
+  const [nome, setNome] = useState<string>();
   useEffect(() => {
     const buscarUsarioLogado = async () => {
       try {
@@ -19,7 +19,7 @@ export default function TabLayout() {
           console.warn("Token não encontrado. Usuário precisa logar.");
           return;
         }
-        const response = await httpService.get(`http://10.5.3.45:3000/api/ser/findByEmail/${email}}`, {
+        const response = await httpService.get(`http://192.168.15.105:3000/api/ser/findByEmail/${email}}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
