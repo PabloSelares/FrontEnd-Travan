@@ -37,7 +37,7 @@ const Chat = () => {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://192.168.15.131:3000");
+    const ws = new WebSocket("ws://10.5.2.247:3000");
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -85,7 +85,7 @@ const Chat = () => {
           <Balloon message={item} userLogged={userLogged} />
         )}
         ListEmptyComponent={() => (
-          <Text style={{ alignSelf: "center", color: "#848484" }}>
+          <Text style={{ alignSelf: "center", color: "#848484", padding: 20 }}>
             Sem mensagens no momento
           </Text>
         )}
