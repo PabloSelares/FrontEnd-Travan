@@ -33,6 +33,7 @@ export default function RootLayout() {
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="register" options={{ headerShown: false }} />
       <Stack.Screen name="pagamento" options={{ headerShown: false }} />
+      <Stack.Screen name="landpage" options={{ headerShown: false }} />
       
       <Stack.Screen 
         name="changeName" 
@@ -42,10 +43,10 @@ export default function RootLayout() {
           headerShown: true,
           headerLeft: () => (
             <TouchableOpacity
-            onPress={() => router.push("/(tabs)/home")}
+            onPress={() => router.back()}
               style={{ padding: 10, marginLeft: 15 }}
             >
-              <Ionicons name="arrow-back" size={24} color="black" />
+              <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
           ),
         }} 
@@ -56,12 +57,22 @@ export default function RootLayout() {
         options={{
           headerTitleAlign: "center",
           title: 'AI Chat Travan',
+          
+          headerTitleStyle: {
+            color: "#fff",
+            fontWeight: "bold",
+          },
+
+          //mudar a cor do background
+          headerStyle: {
+            backgroundColor: "#3a0ca3",
+          },
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.replace("/(tabs)/home")}
-              style={{ padding: 10, marginLeft: 15 }}
+              onPress={() => router.back()}
+              style={{ padding: 10, marginLeft: 15,  }}
             >
-              <Ionicons name="arrow-back" size={24} color="black" />
+              <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
           ),
         }}
