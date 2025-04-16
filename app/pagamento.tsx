@@ -16,7 +16,7 @@ function Pagamento() {
   const destino = params.destino as string;
   const [formaPagamento, setFormaPagamento] = useState("");
   const opcoesPagamento = ["Cartão de Crédito", "Pix", "Boleto"];
-  const SERVER_URL = 'http://192.168.15.131:3000';
+  const SERVER_URL = 'http://10.5.2.247:3000';
   useEffect(() => {
     if (valorFinal <= 0) {
       Alert.alert("Valor inválido.");
