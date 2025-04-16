@@ -104,7 +104,7 @@ function Home() {
           console.warn("Token não encontrado. Usuário precisa logar.");
           return;
         }
-        const response = await httpService.get(`http://192.168.15.105:3000/api/user/findByEmail/${email}`, {
+        const response = await httpService.get(`http://192.168.15.131:3000/api/user/findByEmail/${email}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -137,7 +137,7 @@ function Home() {
         }
 
         // Faz a requisição com o token no header Authorization
-        const response = await httpService.get('http://192.168.15.105:3000/api/viagens', {
+        const response = await httpService.get('http://192.168.15.131:3000/api/viagens', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
