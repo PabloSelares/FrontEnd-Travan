@@ -19,7 +19,7 @@ export default function TabLayout() {
           console.warn("Token não encontrado. Usuário precisa logar.");
           return;
         }
-        const response = await httpService.get(`http://192.168.15.131:3000/api/ser/findByEmail/${email}}`, {
+        const response = await httpService.get(`http://10.5.2.247:3000/api/ser/findByEmail/${email}}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
