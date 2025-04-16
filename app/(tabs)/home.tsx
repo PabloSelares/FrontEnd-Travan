@@ -8,7 +8,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Image,
   Dimensions,
   ScrollView,
   Alert,
@@ -44,11 +43,6 @@ const TripCard: React.FC<ViagensDisponiveis> = ({ viagens, email, nome, idCompra
 
   return (
     <View style={styles.card}>
-      <Image
-        source={{ uri: "https://source.unsplash.com/featured/?travel" }}
-        style={styles.image}
-        resizeMode="cover"
-      />
       <Text style={styles.routeText}>
         {viagens.origem} → {viagens.destino}
       </Text>
@@ -104,7 +98,7 @@ function Home() {
           console.warn("Token não encontrado. Usuário precisa logar.");
           return;
         }
-        const response = await httpService.get(`http://192.168.15.131:3000/api/user/findByEmail/${email}`, {
+        const response = await httpService.get(`http://10.5.2.247:3000/api/user/findByEmail/${email}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -137,7 +131,7 @@ function Home() {
         }
 
         // Faz a requisição com o token no header Authorization
-        const response = await httpService.get('http://192.168.15.131:3000/api/viagens', {
+        const response = await httpService.get('http://10.5.2.247:3000/api/viagens', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -155,7 +149,7 @@ function Home() {
     };
 
     buscarDadosProtegidos();
-  }, []);
+  }, [viagens]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -216,12 +210,6 @@ const styles = StyleSheet.create({
     elevation: 4,
     alignItems: "center",
     width: cardWidth,
-  },
-  image: {
-    width: "100%",
-    height: 100,
-    borderRadius: 10,
-    marginBottom: 10,
   },
   routeText: {
     fontSize: 16,
